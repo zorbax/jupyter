@@ -1,0 +1,10 @@
+format: jb-book
+root: index
+
+parts:
+  - caption: Pyodide
+    chapters:
+      - file: examples.ipynb
+  - caption: Marimo
+    chapters:
+      - file: marimo.ipynb

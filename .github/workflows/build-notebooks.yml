@@ -1,0 +1,83 @@
+name: Build notebooks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+      - uses: actions/cache@v3
+        name: Define a cache for venv based on the uv.lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('uv.lock') }}
+      - name: Install the project dependencies
+        run: uv sync
+      - name: Build Jupyter Book
+        run: |
+          uv run jupyter-book build jupyter/book/
+          rsync -avz jupyter/book/data jupyter/book/_build/html/
+          rm -rf jupyter/book/_build/html/_sources 
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          micromamba-version: 'latest'
+          init-shell: bash
+          cache-downloads: true
+      - name: Build JupyterLite
+        run: |
+          rsync -avz \
+            --exclude "*md" \
+            --exclude "*yml" \
+            --exclude "_build" \
+            --exclude "static" \
+            --exclude ".virtual_documents" \
+            --exclude ".ipynb_checkpoints" \
+            jupyter/book/ jupyter/content/
+          uv pip compile pyproject.toml --no-deps -o requirements.txt
+          uv run jupyter lite build --contents jupyter/content --output-dir jupyter/lite
+          rsync -avz jupyter/lite/ jupyter/book/_build/html/jupyterlite
+          rm -rf jupyter/content
+      - name: Build Marimo
+        run: |
+          mkdir -p marimo && rsync -avz jupyter/book/data marimo/
+          uv run marimo convert jupyter/book/marimo.ipynb -o marimo/marimo.py
+          uv run marimo export html-wasm marimo/marimo.py -o marimo/marimo.html --mode edit
+          rsync -avz marimo/ jupyter/book/_build/html/marimo
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./jupyter/book/_build/html
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,27 @@
+[project]
+name = "educative-notebooks"
+version = "0.1.0"
+description = "Educative notebooks for teaching and learning"
+readme = "README.md"
+requires-python = ">=3.12.0"
+dependencies = [
+    "aiohttp>=3.12.15",
+    "altair>=5.5.0",
+    "folium>=0.20.0",
+    "ipympl>=0.9.7",
+    "ipywidgets>=8.1.7",
+    "jupyter-book>=1.0.4.post1",
+    "jupyterlab>=4.4.7",
+    "jupyterlab-tour>=4.0.1",
+    "jupyterlite-core>=0.6.4",
+    "jupyterlite-pyodide-kernel>=0.6.1",
+    "jupyterlite-terminal>=1.0.1",
+    "marimo>=0.16.0",
+    "matplotlib>=3.10.6",
+    "nbformat>=5.10.4",
+    "numpy>=2.3.3",
+    "pandas>=2.3.2",
+    "plotly>=6.3.0",
+    "sympy>=1.14.0",
+    "vega-datasets>=0.9.0",
+]

@@ -1,0 +1,15 @@
+.DS_Store
+.cockle_temp
+.ipynb_checkpoints
+.jupyterlite.doit.db
+.python-version
+.venv
+.virtual_documents/
+_build
+_output
+_sources
+cockle-config.json
+cockle_wasm_env
+notebook/
+requirements.txt
+uv.lock
