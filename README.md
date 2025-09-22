@@ -9,8 +9,8 @@ A multi-platform Python learning environment featuring three complementary tools
 ## Quick Start
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/zorbax/jupyter
+cd https://github.com/zorbax/jupyter
 uv venv --python 3.12 && source .venv/bin/activate
 uv sync
 make all
